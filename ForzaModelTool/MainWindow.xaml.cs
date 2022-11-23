@@ -37,6 +37,7 @@ namespace ForzaModelTool
         string GamePath;
         string[] DonorCar;
         string[] TargetCar;
+        string GamePathMedia = "\\media\\cars";
         readonly string tempPath = System.IO.Path.GetTempPath();
 
         //click on path button > select game path, if wrong throws error message, if correct move on
@@ -71,24 +72,24 @@ namespace ForzaModelTool
         //fill car lists
         private void CarLists()
         {
-            DonorCar = Directory.GetFiles(GamePath + "\\media\\cars");
+            DonorCar = Directory.GetFiles(GamePath + GamePathMedia);
             foreach (string donoCar in DonorCar)
             {
                 //removes path + file extension but would require change in most of the code
                 //string result = Path.GetFileNameWithoutExtension(donoCar);
-                LST_DonorCar.Items.Add(donoCar);
+                LST_DonorCar.Items.Add(Path.GetFileNameWithoutExtension(donoCar));
             }
-            TargetCar = Directory.GetFiles(GamePath + "\\media\\cars");
+            TargetCar = Directory.GetFiles(GamePath + GamePathMedia);
             foreach (string targCar in TargetCar)
             {
-                LST_TargetCar.Items.Add(targCar);
+                LST_TargetCar.Items.Add(Path.GetFileNameWithoutExtension(targCar));
             }
         }
         //looks in GamePath + CarName.zip from list for .modelbin, lists all in new dropdown list
         private void ModelLists(string models)
         {
             //using (ZipArchive archive = ZipFile.OpenRead(GamePath + "\\media\\cars\\" + models + ".zip"))
-            using (ZipArchive archive = ZipFile.OpenRead(models))
+            using (ZipArchive archive = ZipFile.OpenRead($"{GamePath}{GamePathMedia}{"\\"}{models}{".zip"}"))
             {
                 foreach (ZipArchiveEntry entry in archive.Entries)
                 {
@@ -214,7 +215,7 @@ namespace ForzaModelTool
             if (!Directory.Exists(ImportPath))
             {
                 //Extract selected dono car zip to new Folder inside 'temp\forza model tool\import'
-                ZipFile.ExtractToDirectory(LST_DonorCar.SelectedItem.ToString(), ImportPath);
+                ZipFile.ExtractToDirectory($"{GamePath}{GamePathMedia}{"\\"}{LST_DonorCar.SelectedItem}{".zip"}", ImportPath);
             }
             //check if temp car folder inside 'temp\forza model tool\export' + folder structure of target model does not exist
             if (!Directory.Exists($"{ExportPath}{"\\"}{Path.GetDirectoryName(LST_TargetModel.SelectedItem.ToString())}"))
@@ -240,7 +241,7 @@ namespace ForzaModelTool
 
             if (!Directory.Exists($"{ImportPath}{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}"))
             {
-                ZipFile.ExtractToDirectory(LST_TargetCar.SelectedItem.ToString(), $"{ImportPath}{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}");
+                ZipFile.ExtractToDirectory($"{GamePath}{GamePathMedia}{"\\"}{LST_TargetCar.SelectedItem}{".zip"}", $"{ImportPath}{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}");
             }
             if (!File.Exists(TargetCarbin))
             {
