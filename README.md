@@ -29,3 +29,5 @@ You can use this button to restart your progress however this won't remove any a
 # Known issues
 If both `Donator Car` and `Target Car` are the same car and you selected `Donator Car` first it won't load the `Target Model` list.
 (This can easily be avoided by always selecting the `Target Car` first.)
+
+There might be issues if you try to swap something like `CARNAME_skeleton.modelbin` and `ProxyLOD.modelbin`.
