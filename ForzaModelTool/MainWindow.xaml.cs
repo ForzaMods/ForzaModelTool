@@ -72,11 +72,11 @@ namespace ForzaModelTool
         //fill car lists
         private void CarLists()
         {
+            // scrap car zips from GamePath + \media\cars
             DonorCar = Directory.GetFiles(GamePath + GamePathMedia);
             foreach (string donoCar in DonorCar)
             {
-                //removes path + file extension but would require change in most of the code
-                //string result = Path.GetFileNameWithoutExtension(donoCar);
+                // removes path + file extension so it looks cleaner
                 LST_DonorCar.Items.Add(Path.GetFileNameWithoutExtension(donoCar));
             }
             TargetCar = Directory.GetFiles(GamePath + GamePathMedia);
@@ -88,7 +88,6 @@ namespace ForzaModelTool
         //looks in GamePath + CarName.zip from list for .modelbin, lists all in new dropdown list
         private void ModelLists(string models)
         {
-            //using (ZipArchive archive = ZipFile.OpenRead(GamePath + "\\media\\cars\\" + models + ".zip"))
             using (ZipArchive archive = ZipFile.OpenRead($"{GamePath}{GamePathMedia}{"\\"}{models}{".zip"}"))
             {
                 foreach (ZipArchiveEntry entry in archive.Entries)
@@ -125,6 +124,7 @@ namespace ForzaModelTool
 
         private void BTN_Swapper_Click(object sender, RoutedEventArgs e)
         {
+            // if dono + target models are selected disable buttons and run Swapper()
             if (LST_DonorModel.SelectedItem != null && LST_TargetModel.SelectedItem != null)
             {
                 if (!Directory.Exists(tempPath + "Forza Model Tool"))
@@ -163,41 +163,46 @@ namespace ForzaModelTool
             //Import + Export strings to make things easier
             string GamePath2 = $"{GamePath}{"\\media\\Stripped\\MediaOverride\\RC0\\"}{"Cars"}";
             string tempPath2 = tempPath + @"Forza Model Tool\";
-            //string ImportPath = $"{tempPath2}{"Import\\"}{Path.GetFileNameWithoutExtension(LST_DonorCar.SelectedItem.ToString())}";
 
+            // 
             if (Directory.Exists($"{tempPath2}{"Export\\"}"))
             {
                 string ExportPath = $"{tempPath2}{"Export\\"}{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}";
                 //if zip does not exist
                 if (!File.Exists($"{ExportPath}{".zip"}"))
                 {
-                    //create zip of target model(s) with name of target car
-                    ZipFile.CreateFromDirectory(ExportPath, $"{ExportPath}{".zip"}");
-                }
-
-                //if target car zip in '\media\Stripped\MediaOverride\RC0\Cars' does not exist
-                if (!File.Exists($"{GamePath2}{"\\"}{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}"))
-                {
-                    //move said zip to '\media\Stripped\MediaOverride\RC0\Cars'
-                    File.Move($"{ExportPath}{".zip"}", $"{GamePath2}{"\\"}{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}");
-                    System.Windows.MessageBox.Show($"{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}" + " was successfully created!", ":)");
-                }
-                else
-                {
-                    //throws "error" popup that the target car zip already exists in that directory, user can overwrite said zip by pressing yes button
-                    MessageBoxResult result;
-                    result = System.Windows.MessageBox.Show($"{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}" + " already exists. Do you want to overwrite it?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        //move + overwrite created target zip to '\media\Stripped\MediaOverride\RC0\Cars'
-                        File.Move($"{ExportPath}{".zip"}", $"{GamePath2}{"\\"}{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}", true);
-                        System.Windows.MessageBox.Show($"{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}" + " was successfully created!", ":)");
-                    }
-                    //if no, target car zip inside export folder gets deleted
+                    if (!Directory.Exists(ExportPath))
+                        System.Windows.MessageBox.Show($"{"The folder \""}{LST_TargetCar.SelectedItem}{"\" is missing. \nPlease swap a model first before trying to create the zip."}", "Missing Folder", MessageBoxButton.OK, MessageBoxImage.Error);
                     else
                     {
-                        File.Delete($"{ExportPath}{".zip"}");
-                        System.Windows.MessageBox.Show($"{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}" + " was not created.", ":(");
+                        //create zip of target model(s) with name of target car
+                        ZipFile.CreateFromDirectory(ExportPath, $"{ExportPath}{".zip"}");
+
+                        //if target car zip in '\media\Stripped\MediaOverride\RC0\Cars' does not exist
+                        if (!File.Exists($"{GamePath2}{"\\"}{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}"))
+                        {
+                            //move said zip to '\media\Stripped\MediaOverride\RC0\Cars'
+                            File.Move($"{ExportPath}{".zip"}", $"{GamePath2}{"\\"}{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}");
+                            System.Windows.MessageBox.Show($"{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}" + " was successfully created!", ":)");
+                        }
+                        else
+                        {
+                            //throws "error" popup that the target car zip already exists in that directory, user can overwrite said zip by pressing yes button
+                            MessageBoxResult result;
+                            result = System.Windows.MessageBox.Show($"{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}" + " already exists. Do you want to overwrite it?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                            if (result == MessageBoxResult.Yes)
+                            {
+                                //move + overwrite created target zip to '\media\Stripped\MediaOverride\RC0\Cars'
+                                File.Move($"{ExportPath}{".zip"}", $"{GamePath2}{"\\"}{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}", true);
+                                System.Windows.MessageBox.Show($"{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}" + " was successfully created!", ":)");
+                            }
+                            //if no, target car zip inside export folder gets deleted
+                            else
+                            {
+                                File.Delete($"{ExportPath}{".zip"}");
+                                System.Windows.MessageBox.Show($"{Path.GetFileNameWithoutExtension(LST_TargetCar.SelectedItem.ToString())}{".zip"}" + " was not created.", ":(");
+                            }
+                        }
                     }
                 }
             }
@@ -306,6 +311,7 @@ namespace ForzaModelTool
 
                 // seek inside carbin to beginning of needed texture entry. seek inside temp.dat to end of the file
                 donoCarb.Seek(DonoStartPosition + Path.GetFileName(LST_DonorModel.SelectedItem.ToString()).Length + 70, SeekOrigin.Begin);
+                // seek to end of temp.dat
                 writeStream.Seek(TargStartPosition + Path.GetFileName(LST_TargetModel.SelectedItem.ToString()).Length + 70, SeekOrigin.Begin);
                 // while selected texture entry is bigger than 'yeppers' read and write into file. yeppers = 0 and gets increased by 1 after each read + write
                 while (DonoEndPosition - (DonoStartPosition + Path.GetFileName(LST_DonorModel.SelectedItem.ToString()).Length + 70) > yeppers)
@@ -325,7 +331,9 @@ namespace ForzaModelTool
                 byte[] buffer = new byte[1024];
                 int bytesRead;
 
+                // seek to end of
                 targCarb.Seek(TargEndPosition, SeekOrigin.Begin);
+                // seek to end of temp.dat again
                 writeStream.Seek(TargStartPosition + Path.GetFileName(LST_TargetModel.SelectedItem.ToString()).Length + 70 + DonoEndPosition - (DonoStartPosition + Path.GetFileName(LST_DonorModel.SelectedItem.ToString()).Length + 70), SeekOrigin.Begin);
                 while ((bytesRead = targCarb.Read(buffer, 0, 1024)) > 0)
                 {
@@ -335,6 +343,7 @@ namespace ForzaModelTool
                 targCarb.Close();
             }
 
+            // delete target carbin, rename "temp.dat" to target carbin and move to its location
             File.Delete(TargetCarbin);
             File.Copy(tempPath2 + "temp.dat", TargetCarbin);
             File.Delete(tempPath2 + "temp.dat");
@@ -349,6 +358,7 @@ namespace ForzaModelTool
             string ExportPath = $"{tempPath2}{"Export\\"}";
             string ImportPath = $"{tempPath2}{"Import\\"}";
 
+            // if Export folder exists remove both Export and Import folders
             if (Directory.Exists($"{ExportPath}"))
             {
                 MessageBoxResult result;

@@ -39,7 +39,7 @@
             <ComboBox x:Name="LST_TargetCar" DropDownClosed="LST_TargetCar_SelectionChanged"/>
             
             <!-- Select Target Model with dropdown Menu -->
-            <TextBlock Text="Select Model to replace:" Foreground="White" Margin="0,10,0,0"/>
+            <TextBlock Text="Select Target Model to replace:" Foreground="White" Margin="0,10,0,0"/>
             <ComboBox x:Name="LST_TargetModel"/>
             
             <!-- Select Donator Car with dropdown Menu -->
@@ -47,7 +47,7 @@
             <ComboBox x:Name="LST_DonorCar" DropDownClosed="LST_DonorCar_SelectionChanged"/>
             
             <!-- Select Donator Model with dropdown Menu -->
-            <TextBlock Text="Select Model you want to replace with:" Foreground="White" Margin="0,10,0,0"/>
+            <TextBlock Text="Select Donator Model you want to replace with:" Foreground="White" Margin="0,10,0,0"/>
             <ComboBox x:Name="LST_DonorModel"/>
 
             <!-- Magic Buttons -->
