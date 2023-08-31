@@ -4,15 +4,24 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="Forza Model Replacer" Height="450" Width="350" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True" Background="Transparent" MouseDown="MainWindow_MouseDown">
+        Title="Forza Model Replacer" Height="500" Width="350" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True" Background="Transparent" MouseDown="MainWindow_MouseDown">
 
     <!-- Main Window rounded edges-->
     <Border Background="#FF3E3E3E" BorderBrush="Black" BorderThickness="2" CornerRadius="4">
         <!-- Stack Layout, easy to work with -->
-        <StackPanel Margin="10,5,10,0">
-            
+        <Grid Margin="10,5,10,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="340"/>
+            </Grid.RowDefinitions>
             <!-- Grid for Minimize + Exit Buttons -->
-            <Grid Margin="0,0,-5,-5">
+            <Grid Grid.Row="0"
+                  Margin="0,0,-5,-5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="16"/>
@@ -21,10 +30,11 @@
                 <Button x:Name="ExitButton" Grid.Column="2" Click="ExitButton_Click" Content="X" Height="16" Width="16" FontWeight="Bold" Foreground="White" Padding="1,-1.5,1,1" Background="{x:Null}" BorderBrush="{x:Null}"/>
                 <Button x:Name="MinButton" Grid.Column="1" Click="MinButton_Click" Content="_" Height="16" Width="16" HorizontalAlignment="Center" FontWeight="Bold" Foreground="White" Padding="1,-4,1,1" Background="{x:Null}" BorderBrush="{x:Null}"/>
             </Grid>
-            
             <!-- Game Path + Select Path Button // using Grid to put Button next to text box -->
-            <TextBlock Text="Select Game Path:" Foreground="White"/>
-            <Grid>
+            <TextBlock Grid.Row="1" Text="Select Game Path:" Foreground="White" VerticalAlignment="Top"/>
+            <Grid Grid.Row="1"
+                  Height="20"
+                  VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="40"/>
@@ -32,35 +42,34 @@
                 <Button x:Name="BTN_Path" Grid.Column="1" Content="Path" Click="BTN_Path_Click"/>
                 <TextBox x:Name="TXT_GamePath" Grid.Column="0" FontSize="16" IsReadOnly="True"/>
             </Grid>
-            <TextBlock x:Name="TXT_NoPath" Text="Please select your Game Path!" Foreground="Red" Visibility="Visible"/>
-            
-            <!-- Select Target Car with dropdown Menu -->
-            <TextBlock Text="Select Target Car:" Foreground="White" Margin="0,30,0,0"/>
-            <ComboBox x:Name="LST_TargetCar" DropDownClosed="LST_TargetCar_SelectionChanged"/>
-            
-            <!-- Select Target Model with dropdown Menu -->
-            <TextBlock Text="Select Target Model to replace:" Foreground="White" Margin="0,10,0,0"/>
-            <ComboBox x:Name="LST_TargetModel"/>
-            
-            <!-- Select Donator Car with dropdown Menu -->
-            <TextBlock Text="Select Donator Car:" Foreground="White" Margin="0,50,0,0"/>
-            <ComboBox x:Name="LST_DonorCar" DropDownClosed="LST_DonorCar_SelectionChanged"/>
-            
-            <!-- Select Donator Model with dropdown Menu -->
-            <TextBlock Text="Select Donator Model you want to replace with:" Foreground="White" Margin="0,10,0,0"/>
-            <ComboBox x:Name="LST_DonorModel"/>
+            <TextBlock Grid.Row="1"
+                       VerticalAlignment="Bottom"
+                       x:Name="TXT_NoPath"
+                       Text="Please select your Game Path!"
+                       Foreground="Red"
+                       Visibility="Visible"/>
 
-            <!-- Magic Buttons -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="40"/>
-                </Grid.ColumnDefinitions>
-                <Button x:Name="BTN_Swapper" Grid.Column="0" Content="Swap Model" Height="40" Width="120" Margin="0,40,0,0" FontWeight="Bold" FontSize="16" Click="BTN_Swapper_Click" IsEnabled="False"/>
-                <Button x:Name="BTN_Zip" Grid.Column="1" Content="Create Zip" Height="40" Width="120" Margin="0,40,0,0" FontWeight="Bold" FontSize="16" Click="BTN_Zip_Click" IsEnabled="False"/>
-                <Button x:Name="BTN_CLR" Grid.Column="2" Content="X" Height="18" Width="18" Margin="0,40,0,0" Padding="1,-3,1,1" FontWeight="Bold" FontSize="16" Click="BTN_CLR_Click" IsEnabled="False"/>
-            </Grid>
-        </StackPanel>
+            <!-- View Switching (from szaamerik)-->
+            <StackPanel Grid.Row="2" Height="40" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button Content="Model Swap"
+                        Style="{StaticResource MainButton}"
+                        Width="120"
+                        Margin="0,0,30,0"
+                        Tag="/Views/ModelSwapView.xaml"
+                        Click="CategoryButton_Click"/>
+                <Button Content="Wheel Swap"
+                        Style="{StaticResource MainButton}"
+                        Width="120"
+                        Margin="0"
+                        Tag="/Views/WheelSwapView.xaml"
+                        Click="CategoryButton_Click"/>
+            </StackPanel>
+
+            <Frame x:Name="DisplayFrame"
+                   Source="/Views/ModelSwapView.xaml"
+                   NavigationUIVisibility="Hidden"
+                   Grid.Row="3"
+                   Margin="0,20,0,10"/>
+        </Grid>
     </Border>
 </Window>
