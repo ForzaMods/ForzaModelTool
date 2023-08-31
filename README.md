@@ -52,6 +52,8 @@ Some aftermarket wheels in the selection may be unavailable in the game, you can
 Possibly more things that i either forgot or don't know about. Let me know if you find anything.
 
 # Credits
+Das - Creator of this tool
+
 szaamerik - Sharing me his method on how to easily switch views
 
 draff - His tool `Easy Wheel Replace` gave me the inspiration to create this tool
