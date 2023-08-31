@@ -5,7 +5,7 @@ Basically all it does is swap one car part with another car part and modifies th
 
 This tool was made for Forza Horizon 5 and requires .NET 7 (might work on other Forza PC-Ports too)
 
-Update 2.0.0: Now you can swap aftermarket wheels with car wheels. (Or optionally create car wheels as an add-on)
+Update 2.0.0: Now you can swap aftermarket wheels with car wheels. (Or optionally create car wheels as an add-on, read down for more infos)
 
 # How to use (Model Swap)
 1. Select your game path (where "ForzaHorizon5.exe" is located) by clicking on the `Path` button.
