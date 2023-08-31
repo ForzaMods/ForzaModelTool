@@ -9,18 +9,45 @@ namespace ForzaModelTool
 {
     public partial class MainWindow : Window
     {
+        public static bool validPath;
+        public static string GamePath;
+        public static string rawPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Forza Model Tool\";
+
         public MainWindow()
         {
+            if (!Directory.Exists(rawPath))
+                FolderCheck();
+
             InitializeComponent();
+            Loaded += MainWindow_Loaded;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // check if file exists and if its content isnt null
+                if (File.Exists(rawPath + @"\Path.txt") && (File.ReadAllText(rawPath + @"\Path.txt") != ""))
+                {
+                    // if its not null check if the path contains fh5 exe
+                    if (File.Exists(File.ReadAllText(rawPath + @"\Path.txt") + @"\ForzaHorizon5.exe"))
+                    {
+                        TXT_GamePath.Text = File.ReadAllText(rawPath + @"\Path.txt");
+                        GamePath = File.ReadAllText(rawPath + @"\Path.txt");
+                        TXT_NoPath.Visibility = Visibility.Hidden;
+                        // call the path button func to populate the list bc I was too lazy to analyze whats going on in the code lmao
+                        BTN_Path_Click(new object(), new RoutedEventArgs());
+                    }
+                }
+            }
+            catch { TXT_NoPath.Visibility = Visibility.Visible; }
         }
         #region UI stuff
         // Allows to move the main window around while holding down left mouse button, yoinked from yt comments
         private void MainWindow_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
-            {
                 DragMove();
-            }
         }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
@@ -34,17 +61,16 @@ namespace ForzaModelTool
         }
         #endregion
 
-        public static bool validPath;
-        public static string GamePath;
-        public static string rawPath = $"{"C:\\Users\\"}{Environment.UserName}{"\\Documents\\Forza Model Tool\\"}";
-
         //click on path button > select game path, if wrong throws error message, if correct move on
         public void BTN_Path_Click(object sender, RoutedEventArgs e)
         {
             //Pop-up to select Folder, yoinked from YT
-            FolderBrowserDialog dialog = new();
-            dialog.ShowDialog();
-            GamePath = dialog.SelectedPath;
+            if (TXT_GamePath.Text == "")
+            {
+                FolderBrowserDialog dialog = new();
+                dialog.ShowDialog();
+                GamePath = dialog.SelectedPath;
+            }
 
             //if game path includes ForzaHorizon5.exe or not
             if (File.Exists(GamePath + "\\ForzaHorizon5.exe"))
@@ -52,7 +78,12 @@ namespace ForzaModelTool
                 validPath = true;
                 TXT_GamePath.Text = new FileInfo(GamePath).FullName;
                 TXT_NoPath.Visibility = Visibility.Hidden;
-                BTN_Path.IsEnabled = false;
+                //BTN_Path.IsEnabled = false;
+
+                if (!File.Exists(rawPath + @"\Path.txt"))
+                    using (File.Create(rawPath + @"\Path.txt")) { } // Prevent crash from "file in use"
+
+                File.WriteAllText(rawPath + @"\Path.txt", GamePath);
             }
             else
             {
