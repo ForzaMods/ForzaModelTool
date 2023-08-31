@@ -50,3 +50,8 @@ There might be issues if you try to swap something like `CARNAME_skeleton.modelb
 Some aftermarket wheels in the selection may be unavailable in the game, you can thank the Forza Developers for leaving unused/unfinished files everywhere.
 
 Possibly more things that i either forgot or don't know about. Let me know if you find anything.
+
+# Credits
+szaamerik - Sharing me his method on how to easily switch views
+
+draff - His tool `Easy Wheel Replace` gave me the inspiration to create this tool
