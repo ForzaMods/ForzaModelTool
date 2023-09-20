@@ -94,6 +94,13 @@ namespace ForzaModelTool.Views
                 foreach (string car in Cars)
                     LST_DonorWheel.Items.Add(Path.GetFileNameWithoutExtension(car));
             }
+
+            if (MainWindow.curPath != GamePath)
+            {
+                LST_DonorWheel.Items.Clear();
+                MainWindow.curPath = GamePath;
+                CarList();
+            }
         }
 
         // if list empty, fill wheel list (aftermarket wheels)
@@ -105,6 +112,13 @@ namespace ForzaModelTool.Views
                 Wheels = Directory.GetFiles(GamePath + GamePathMediaW);
                 foreach (string wheel in Wheels)
                     LST_TargetWheel.Items.Add(Path.GetFileNameWithoutExtension(wheel));
+            }
+
+            if (MainWindow.curPath != GamePath)
+            {
+                LST_TargetWheel.Items.Clear();
+                MainWindow.curPath = GamePath;
+                WheelList();
             }
         }
 
@@ -157,6 +171,8 @@ namespace ForzaModelTool.Views
             string[] textureZips = { "\\Textures.zip", "\\Textures_pri_44.zip", "\\Textures_pri_45.zip", "\\Textures_pri_301.zip" };
             bool foundTexture = false;
             bool textureError = false;
+
+            MainWindow.FolderCheck();
 
             // if add-on checkbox checked, create wheel zip with car name, else create wheel zip of selected car wheel renamed to target wheel
             if (bChecked)
@@ -255,8 +271,8 @@ namespace ForzaModelTool.Views
                         foreach (ZipArchiveEntry entry in archive.Entries)
                             if (entry.FullName.Contains("_wheellf_ao", StringComparison.OrdinalIgnoreCase))
                             {
-                                archive.GetEntry(entry.FullName).ExtractToFile($"{ExportWPath}{"\\"}{TexturePath}{"\\"}{entry.Name}", true);
                                 foundTexture = true;
+                                archive.GetEntry(entry.FullName).ExtractToFile($"{ExportWPath}{"\\"}{TexturePath}{"\\"}{LST_TargetWheel.SelectedItem}{"_wheelLF_AO.swatchbin"}", true);
                                 break;
                             }
 
@@ -269,17 +285,18 @@ namespace ForzaModelTool.Views
                                 foreach (ZipArchiveEntry entry in archive.Entries)
                                     if (entry.FullName.Contains(LST_DonorWheel.SelectedItem.ToString() + "_wheellf_ao", StringComparison.OrdinalIgnoreCase))
                                     {
-                                        archive.GetEntry(entry.FullName).ExtractToFile($"{ExportWPath}{"\\"}{TexturePath}{"\\"}{LST_TargetWheel.SelectedItem}{"_wheelLF_AO.swatchbin"}", true);
                                         foundTexture = true;
+                                        archive.GetEntry(entry.FullName).ExtractToFile($"{ExportWPath}{"\\"}{TexturePath}{"\\"}{LST_TargetWheel.SelectedItem}{"_wheelLF_AO.swatchbin"}", true);
                                         break;
                                     }
                             }
                         }
+                        break;
                     }
                     if (!foundTexture)
                     {
-                        MessageBox.Show("Texture was not found.", "Missing Texture", MessageBoxButton.OK, MessageBoxImage.Error);
                         textureError = true;
+                        MessageBox.Show("Texture was not found.", "Missing Texture", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
 
                     // if texture file found, create + move zip to \media\Stripped\MediaOverride\RC0\Cars\_library\scene\wheels
@@ -288,7 +305,7 @@ namespace ForzaModelTool.Views
                         if (!Directory.Exists(GamePathMediaOW))
                             Directory.CreateDirectory(GamePathMediaOW);
 
-                        if (!File.Exists($"{ExportWPath}{".zip"}"))
+                        if (!File.Exists($"{GamePathMediaOW}{"\\"}{LST_TargetWheel.SelectedItem}{".zip"}"))
                         {
                             ZipFile.CreateFromDirectory(ExportWPath, $"{GamePathMediaOW}{"\\"}{LST_TargetWheel.SelectedItem}{".zip"}");
                             MessageBox.Show($"{Path.GetFileNameWithoutExtension(LST_TargetWheel.SelectedItem.ToString())}{".zip"}" + " was successfully created!", ":)");
@@ -301,6 +318,7 @@ namespace ForzaModelTool.Views
                             if (result == MessageBoxResult.Yes)
                             {
                                 //move + overwrite created target zip to '\media\Stripped\MediaOverride\RC0\Cars\_library\scene\wheels'
+                                ZipFile.CreateFromDirectory(ExportWPath, $"{ExportWPath}{".zip"}");
                                 File.Move($"{ExportWPath}{".zip"}", $"{GamePathMediaOW}{"\\"}{LST_TargetWheel.SelectedItem}{".zip"}", true);
                                 MessageBox.Show($"{Path.GetFileNameWithoutExtension(LST_TargetWheel.SelectedItem.ToString())}{".zip"}" + " was successfully created!", ":)");
                             }
@@ -312,11 +330,12 @@ namespace ForzaModelTool.Views
                             }
                         }
                     }
-                    // delete leftover folders/files
-                    if (Directory.Exists(ExportCPath))
-                        Directory.Delete(ExportCPath, true);
                 }
             }
+
+            // delete leftover folders/files
+            if (Directory.Exists($"{rawPath}{"Wheel Swap\\"}{Path.GetFileNameWithoutExtension(LST_TargetWheel.SelectedItem.ToString())}"))
+                Directory.Delete($"{rawPath}{"Wheel Swap\\"}{Path.GetFileNameWithoutExtension(LST_TargetWheel.SelectedItem.ToString())}", true);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace ForzaModelTool
         public static bool validPath;
         public static string GamePath;
         public static string rawPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Forza Model Tool\";
+        public static string curPath;
 
         public MainWindow()
         {
@@ -34,9 +35,9 @@ namespace ForzaModelTool
                     {
                         TXT_GamePath.Text = File.ReadAllText(rawPath + @"\Path.txt");
                         GamePath = File.ReadAllText(rawPath + @"\Path.txt");
+                        curPath = GamePath;
                         TXT_NoPath.Visibility = Visibility.Hidden;
-                        // call the path button func to populate the list bc I was too lazy to analyze whats going on in the code lmao
-                        BTN_Path_Click(new object(), new RoutedEventArgs());
+                        validPath = true;
                     }
                 }
             }
@@ -64,33 +65,32 @@ namespace ForzaModelTool
         //click on path button > select game path, if wrong throws error message, if correct move on
         public void BTN_Path_Click(object sender, RoutedEventArgs e)
         {
-            //Pop-up to select Folder, yoinked from YT
-            if (TXT_GamePath.Text == "")
-            {
-                FolderBrowserDialog dialog = new();
-                dialog.ShowDialog();
-                GamePath = dialog.SelectedPath;
-            }
+            FolderBrowserDialog dialog = new();
+            DialogResult result = dialog.ShowDialog();
+            GamePath = dialog.SelectedPath;
 
-            //if game path includes ForzaHorizon5.exe or not
-            if (File.Exists(GamePath + "\\ForzaHorizon5.exe"))
+            if (result == System.Windows.Forms.DialogResult.OK)
             {
-                validPath = true;
-                TXT_GamePath.Text = new FileInfo(GamePath).FullName;
-                TXT_NoPath.Visibility = Visibility.Hidden;
-                //BTN_Path.IsEnabled = false;
+                //if game path includes ForzaHorizon5.exe or not
+                if (File.Exists(GamePath + "\\ForzaHorizon5.exe"))
+                {
+                    validPath = true;
+                    TXT_GamePath.Text = new FileInfo(GamePath).FullName;
+                    TXT_NoPath.Visibility = Visibility.Hidden;
 
-                if (!File.Exists(rawPath + @"\Path.txt"))
-                    using (File.Create(rawPath + @"\Path.txt")) { } // Prevent crash from "file in use"
+                    if (!File.Exists(rawPath + @"\Path.txt"))
+                        using (File.Create(rawPath + @"\Path.txt")) { } // Prevent crash from "file in use"
 
-                File.WriteAllText(rawPath + @"\Path.txt", GamePath);
+                    File.WriteAllText(rawPath + @"\Path.txt", GamePath);
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("Path is wrong or not selected.", "Error", MessageBoxButton.OK, (MessageBoxImage)MessageBoxIcon.Error);
+                    validPath = false;
+                    TXT_NoPath.Visibility = Visibility.Visible;
+                }
             }
-            else
-            {
-                System.Windows.MessageBox.Show("Path is wrong or not selected.", "Error", MessageBoxButton.OK, (MessageBoxImage)MessageBoxIcon.Error);
-                validPath = false;
-                TXT_NoPath.Visibility = Visibility.Visible;
-            }
+            else GamePath = curPath;
         }
 
         // view switching (from szaamerik)

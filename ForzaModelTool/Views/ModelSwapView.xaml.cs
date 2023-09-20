@@ -59,6 +59,16 @@ namespace ForzaModelTool.Views
                     LST_TargetCar.Items.Add(Path.GetFileNameWithoutExtension(car));
                 }
             }
+
+            if (MainWindow.curPath != GamePath)
+            {
+                LST_DonorCar.Items.Clear();
+                LST_TargetCar.Items.Clear();
+
+                MainWindow.curPath = GamePath;
+
+                CarLists();
+            }
         }
 
         //looks in GamePath + CarName.zip from list for .modelbin, lists all in new dropdown list
